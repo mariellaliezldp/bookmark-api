@@ -6,11 +6,13 @@ class BookmarkCreate(BaseModel):
     url: HttpUrl
     title: str = Field(max_length=200)
     description: str | None = Field(default=None, max_length=500)
+    tags: list[str] = []
 
 class BookmarkUpdate(BaseModel):
     url: Optional[HttpUrl]
     title: Optional[str]
     description: Optional[str]
+    tags: Optional[list[str]] = None
 
 class BookmarkResponse(BaseModel):
     id: int
@@ -20,6 +22,5 @@ class BookmarkResponse(BaseModel):
     user_id: int
     created_at: datetime
     updated_at: datetime
-
     class Config:
         from_attributes = True

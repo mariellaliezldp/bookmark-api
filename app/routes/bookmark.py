@@ -2,10 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.schemas.bookmark import BookmarkCreate, BookmarkUpdate
+from app.schemas.bookmark import BookmarkCreate, BookmarkUpdate, BookmarkResponse
 from app.services.bookmark_service import create_bookmark, get_bookmarks, get_bookmark, update_bookmark, delete_bookmark
-from app.models.user import User
-
 
 router = APIRouter()
 
@@ -15,7 +13,7 @@ def create_bookmark_route(data: BookmarkCreate, db: Session = Depends(get_db)):
     
     return new_bookmark
 
-@router.get("/bookmarks")
+@router.get("/bookmarks", response_model=list[BookmarkResponse])
 def get_bookmarks_route(db: Session = Depends(get_db)):
     return get_bookmarks(db)
 

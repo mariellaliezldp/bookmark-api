@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.models.bookmark import Bookmark
+from app.models.tag import Tag
 from app.schemas.bookmark import BookmarkCreate, BookmarkUpdate
 
 
@@ -11,6 +12,20 @@ def create_bookmark(db: Session, data: BookmarkCreate):
         description=data.description,
         user_id=1
     )
+
+    tag_objects = []
+
+    for tag_name in data.tags:
+        tag = db.query(Tag).filter(Tag.name == tag_name).first()
+
+        if not tag:
+            tag = Tag(name=tag_name)
+            db.add(tag)
+            db.flush()
+
+        tag_objects.append(tag)
+
+    new_bookmark.tags = tag_objects
 
     db.add(new_bookmark)
     db.commit()
@@ -41,6 +56,21 @@ def update_bookmark(db: Session, bookmark_id: int, data: BookmarkUpdate):
 
     if data.description is not None:
         bookmark.description = data.description
+
+    if data.tags is not None:
+        tag_objects = []
+
+        for tag_name in data.tags:
+            tag = db.query(Tag).filter(Tag.name == tag_name).first()
+
+            if not tag:
+                tag = Tag(name=tag_name)
+                db.add(tag)
+                db.flush()
+
+            tag_objects.append(tag)
+
+        bookmark.tag = tag_objects
 
     db.commit()
     db.refresh(bookmark)
