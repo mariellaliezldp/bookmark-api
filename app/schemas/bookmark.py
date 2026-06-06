@@ -1,10 +1,16 @@
 from pydantic import BaseModel, HttpUrl, Field
 from datetime import datetime
+from typing import Optional
 
 class BookmarkCreate(BaseModel):
     url: HttpUrl
     title: str = Field(max_length=200)
     description: str | None = Field(default=None, max_length=500)
+
+class BookmarkUpdate(BaseModel):
+    url: Optional[HttpUrl]
+    title: Optional[str]
+    description: Optional[str]
 
 class BookmarkResponse(BaseModel):
     id: int

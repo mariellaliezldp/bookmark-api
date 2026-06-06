@@ -34,20 +34,20 @@ def get_user(db: Session, user_id: int):
     return db.query(User).filter(User.id == user_id).first()
 
 
-def update_user(db: Session, user_id: int, payload: UserUpdate):
+def update_user(db: Session, user_id: int, data: UserUpdate):
     user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
         return None
 
-    if payload.username is not None:
-        user.username = payload.username
+    if data.username is not None:
+        user.username = data.username
 
-    if payload.email is not None:
-        user.email = payload.email
+    if data.email is not None:
+        user.email = data.email
 
-    if payload.password is not None:
-        user.password_hash = payload.password
+    if data.password is not None:
+        user.password_hash = data.password
 
     db.commit()
     db.refresh(user)

@@ -30,8 +30,8 @@ def get_user_route(user_id: int, db: Session = Depends(get_db)):
     return user
 
 @router.put("/users/{user_id}")
-def update_user_route(user_id: int, payload: UserUpdate, db: Session = Depends(get_db)):
-    updated_user = update_user(db, user_id, payload)
+def update_user_route(user_id: int, data: UserUpdate, db: Session = Depends(get_db)):
+    updated_user = update_user(db, user_id, data)
 
     if not updated_user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -40,9 +40,9 @@ def update_user_route(user_id: int, payload: UserUpdate, db: Session = Depends(g
 
 @router.delete("/users/{user_id}")
 def delete_user_route(user_id: int, db: Session = Depends(get_db)):
-    deletedUser = delete_user(db, user_id)
+    deleted_user = delete_user(db, user_id)
 
-    if not deletedUser:
+    if not deleted_user:
         raise HTTPException(status_code=404, detail="User not found")
     
     return {"message": "User deleted successfully"}
