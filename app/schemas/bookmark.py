@@ -5,7 +5,6 @@ class BookmarkCreate(BaseModel):
     url: HttpUrl
     title: str = Field(max_length=200)
     description: str | None = Field(default=None, max_length=500)
-    user_id : int
 
 class BookmarkResponse(BaseModel):
     id: int

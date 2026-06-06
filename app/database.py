@@ -12,7 +12,7 @@ engine = create_engine(DATABASE_URL)
 
 ## Session
 ## each time one session gets created/started
-SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind={engine})
+SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 
 Base = declarative_base()
 
@@ -21,4 +21,4 @@ def get_db():
     try:
         yield db
     finally:
-        db.close
+        db.close()
