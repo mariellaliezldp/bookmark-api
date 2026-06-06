@@ -1,6 +1,4 @@
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
-from datetime import datetime
 
 from app.models.bookmark import Bookmark
 from app.schemas.bookmark import BookmarkCreate, BookmarkUpdate
