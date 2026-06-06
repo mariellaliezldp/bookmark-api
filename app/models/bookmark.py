@@ -1,6 +1,9 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from datetime import datetime
+
 from app.database import Base
+from app.models.bookmark_tags import bookmark_tags
 
 class Bookmark(Base):
     __tablename__ = "bookmarks"
@@ -13,3 +16,9 @@ class Bookmark(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    tags = relationship(
+        "Tag",
+        secondary=bookmark_tags,
+        back_populates="bookmarks"
+    )
