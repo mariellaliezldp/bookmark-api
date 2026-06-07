@@ -2,8 +2,7 @@ from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta
 
-SECRET_KEY = "mysecretkey"
-ALGORITHM = "HS256"
+from app.core.config import SECRET_KEY, ALGORITHM
 
 pwd_context = CryptContext(
     schemes=["bcrypt"],
