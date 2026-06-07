@@ -4,6 +4,9 @@ from app.models.bookmark import Bookmark
 from app.models.tag import Tag
 from app.schemas.bookmark import BookmarkCreate, BookmarkUpdate
 
+from datetime import datetime
+from sqlalchemy import or_
+
 
 def create_bookmark(db: Session, data: BookmarkCreate, user_id: int):
     new_bookmark = Bookmark(
@@ -34,9 +37,56 @@ def create_bookmark(db: Session, data: BookmarkCreate, user_id: int):
     return new_bookmark
 
 
-def get_bookmarks(db: Session, user_id: int):
-    return db.query(Bookmark).filter(Bookmark.user_id == user_id).all()
+def get_bookmarks(
+        db: Session, 
+        user_id: int,
+        q: str | None = None,
+        tag: str | None = None,
+        from_date: datetime | None = None,
+        to_date: datetime | None = None,
+        page: int = 1,
+        limit: int = 10):
+    
+    query = db.query(Bookmark).filter(Bookmark.user_id == user_id)
 
+    # Seacrh title or description
+    if q:
+        query = query.filter(
+            or_(
+                Bookmark.title.ilike(f"%{q}%"),
+                Bookmark.description.ilike(f"%{q}%")
+            )
+        )
+
+    # Tag filter
+    if tag:
+        query = query.join(Bookmark.tags).filter(
+            Tag.name.ilike(f"%{tag}%")
+        )
+        
+   # Date filters
+    if from_date:
+        query = query.filter(
+            Bookmark.created_at >= from_date
+        )
+
+    if to_date:
+        query = query.filter(
+            Bookmark.created_at <= to_date
+        )
+
+    total = query.count()
+
+    skip = (page - 1) * limit
+
+    bookmarks = query.offset(skip).limit(limit).all()
+
+    return {
+        "data": bookmarks,
+        "total": total,
+        "page": page,
+        "limit": limit
+    }
 
 def get_bookmark(db: Session, bookmark_id: int, user_id: int):
     return db.query(Bookmark).filter(Bookmark.id == bookmark_id, Bookmark.user_id == user_id).first()
