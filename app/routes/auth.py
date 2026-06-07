@@ -5,9 +5,9 @@ from app.schemas.auth import RegisterRequest, LoginRequest
 from app.database import get_db
 from app.services.auth_service import register_user, login_user
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter(tags=["Auth"])
 
-@router.post("/register")
+@router.post("/api/auth/register")
 def register_route(data: RegisterRequest, db: Session = Depends(get_db)):
     result = register_user(db, data)
 
@@ -19,7 +19,7 @@ def register_route(data: RegisterRequest, db: Session = Depends(get_db)):
     
     return result
 
-@router.post("/login")
+@router.post("/api/auth/login")
 def login_route(data: LoginRequest, db: Session = Depends(get_db)):
     result = login_user(db, data)
 

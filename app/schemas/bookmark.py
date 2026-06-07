@@ -9,9 +9,9 @@ class BookmarkCreate(BaseModel):
     tags: list[str] = []
 
 class BookmarkUpdate(BaseModel):
-    url: Optional[HttpUrl]
-    title: Optional[str]
-    description: Optional[str]
+    url: Optional[HttpUrl] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
     tags: Optional[list[str]] = None
 
 class BookmarkResponse(BaseModel):
