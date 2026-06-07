@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.schemas.bookmark import BookmarkCreate, BookmarkUpdate, BookmarkResponse
-from app.services.bookmark_service import create_bookmark, get_bookmarks, get_bookmark, update_bookmark, delete_bookmark
+from app.services.bookmark_service import create_bookmark, get_bookmarks, get_bookmark, update_bookmark, delete_bookmark, get_bookmark_stats
 from app.models.user import User
 from app.auth.deps import get_current_user
 
@@ -43,6 +43,10 @@ def get_bookmarks_route(
         page=page,
         limit=limit
     )
+
+@router.get("/api/bookmarks/stats")
+def get_bookmark_stats_route(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return get_bookmark_stats(db, current_user.id)
 
 @router.get("/api/bookmarks/{bookmark_id}")
 def get_bookmark_route(

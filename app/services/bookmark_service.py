@@ -6,6 +6,7 @@ from app.schemas.bookmark import BookmarkCreate, BookmarkUpdate
 
 from datetime import datetime
 from sqlalchemy import or_
+from sqlalchemy import text
 
 
 def create_bookmark(db: Session, data: BookmarkCreate, user_id: int):
@@ -87,6 +88,54 @@ def get_bookmarks(
         "page": page,
         "limit": limit
     }
+
+def get_bookmark_stats(db: Session, user_id: int):
+
+    # Total bookmarks
+    total_bookmarks = db.execute(text("""
+        SELECT COUNT(*)
+        FROM bookmarks
+        WHERE user_id = :user_id
+    """), {"user_id": user_id}).scalar()
+
+    # Total tags
+    total_tags = db.execute(text("""
+        SELECT COUNT(DISTINCT t.id)
+        FROM tags t
+        JOIN bookmark_tags bt ON t.id = bt.tag_id
+        JOIN bookmarks b ON b.id = bt.bookmark_id
+        WHERE b.user_id = :user_id
+    """), {"user_id": user_id}).scalar()
+
+    # Tap tags
+    top_tags = db.execute(text("""
+        SELECT t.name, COUNT(*) as count
+        FROM tags t
+        JOIN bookmark_tags bt ON t.id = bt.tag_id
+        JOIN bookmarks b ON b.id = bt.bookmark_id
+        WHERE b.user_id = :user_id
+        GROUP BY t.name
+        ORDER BY count DESC
+        LIMIT 5
+    """), {"user_id": user_id}).fetchall()
+
+    # Bookmarks per month
+    bookmarks_per_month = db.execute(text("""
+        SELECT DATE_FORMAT(created_at, '%Y-%m') AS month,
+                COUNT(*) as count
+        FROM bookmarks
+        WHERE user_id = :user_id
+        GROUP BY month
+        ORDER BY month
+    """), {"user_id": user_id}).fetchall()
+
+    return {
+        "total_bookmarks": total_bookmarks,
+        "total_tags": total_tags,
+        "top_tags": [dict(row._mapping) for row in top_tags],
+        "bookmarks_per_month": [dict(row._mapping) for row in bookmarks_per_month]
+    }
+
 
 def get_bookmark(db: Session, bookmark_id: int, user_id: int):
     return db.query(Bookmark).filter(Bookmark.id == bookmark_id, Bookmark.user_id == user_id).first()
