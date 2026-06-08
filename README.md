@@ -1,6 +1,6 @@
 # Bookmark API (FastAPI Technical Assessment)
 
-This is a simple Bookmark API built using FastAPI.
+This is a simple Bookmark API built using FastAPI and containerized with Docker.
 
 It allows users to register, login, and manage bookmarks with tags, search, and filters.
 
@@ -40,56 +40,67 @@ It allows users to register, login, and manage bookmarks with tags, search, and 
 - MySQL
 - SQLite (for testing)
 - JWT Authentication
+- Docker / Docker Compose
 - Pytest
 
 ---
 
 ## How to Run
 
-### 1. Install dependencies
-pip install -r requirements.txt
+### 1. Clone repository
+git clone https://github.com/mariellaliezldp/bookmark-api.git
+cd bookmark-api
 
-### 2. Setup database
-Update `.env` file:
+### 2. Create environment variables
 
-### 3. Run migrations
-alembic upgrade head
+Create a .env file (do not commit this file):
 
-### 4. Run server
-uvicorn app.main:app --reload
+SECRET_KEY=your-secret-key
+ALGORITHM=HS256
+MYSQL_ROOT_PASSWORD=your-password
 
-## API Documentation
-After running the server:
-Swagger UI:
-http://127.0.0.1:8000/docs
+DATABASE_URL=mysql+pymysql://root:your-password@db:3306/bookmark_db
 
-## API Endpoints
+### 3. Start application
+docker-compose up --build
 
-### Auth
-- POST /api/auth/register
-- POST /api/auth/login
+### 4. Run migrations
+docker exec -it bookmark_api alembic upgrade head
 
-### Bookmarks
-- GET /api/bookmarks
-- POST /api/bookmarks
-- GET /api/bookmarks/{id}
-- PUT /api/bookmarks/{id}
-- DELETE /api/bookmarks/{id}
+### API Documentation
+After running the app:
+Swagger UI: http://localhost:8000/docs
 
-### Stats
-- GET /api/bookmarks/stats
+Auth
+  POST /api/auth/register
+  POST /api/auth/login
+  
+Bookmarks
+  GET /api/bookmarks
+  POST /api/bookmarks
+  GET /api/bookmarks/{id}
+  PUT /api/bookmarks/{id}
+  DELETE /api/bookmarks/{id}
+  
+Stats
+GET /api/bookmarks/stats
 
 ---
-
-## Notes
-
-- Each user can only see their own bookmarks
-- Uses JWT for authentication
-- Uses SQLAlchemy for database
-- Includes search, filter, and pagination
 
 ## Testing
 Run tests:
 python -m pytest
+
+## Docker Architecture
+FastAPI app runs in container bookmark_api
+MySQL runs in container bookmark_mysql
+Services communicate via Docker network (db:3306)
+
+Notes
+
+Database runs inside Docker container
+Alembic is used for migrations
+JWT is used for authentication
+Each user can only access their own bookmarks
 
 - MLDP
